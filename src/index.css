@@ -9,32 +9,60 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 213 27% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 213 27% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 213 27% 14%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 213 78% 42%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 213 78% 55%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 213 27% 14%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 213 78% 95%;
+    --accent-foreground: 213 78% 42%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 31% 91%;
+    --input: 214 31% 91%;
+    --ring: 213 78% 42%;
+
+    /* Banking specific colors */
+    --banking-dark: 213 27% 14%;
+    --banking-blue: 213 78% 42%;
+    --banking-light: 213 78% 95%;
+    --banking-gold: 38 75% 55%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-banking: linear-gradient(135deg, hsl(var(--banking-blue)), hsl(var(--banking-dark)));
+    --gradient-secure: linear-gradient(135deg, hsl(var(--success)), hsl(var(--primary)));
+
+    /* Security alert colors */
+    --alert-critical: 0 84% 60%;
+    --alert-high: 14 86% 55%;
+    --alert-medium: 38 92% 50%;
+    --alert-low: 142 76% 36%;
+
+    /* Shadows */
+    --shadow-banking: 0 4px 20px -2px hsl(var(--primary) / 0.1);
+    --shadow-secure: 0 8px 32px -4px hsl(var(--success) / 0.2);
 
     --radius: 0.5rem;
 

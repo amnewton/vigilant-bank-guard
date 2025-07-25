@@ -1,22 +1,60 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { Shield, Eye, EyeOff, Lock, User } from "lucide-react";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+    setIsLoading(true);
+    
     console.log("Login attempt:", formData);
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Demo credentials for testing
+      if (formData.username === "newton" && formData.password === "1234567") {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back! Redirecting to dashboard...",
+        });
+        
+        // Redirect to dashboard after successful login
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1500);
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid username or password. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,8 +125,14 @@ const Login = () => {
                 <span className="text-muted-foreground">Need help?</span>
               </div>
 
-              <Button type="submit" variant="banking" size="lg" className="w-full">
-                Sign In Securely
+              <Button 
+                type="submit" 
+                variant="banking" 
+                size="lg" 
+                className="w-full" 
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing In..." : "Sign In Securely"}
               </Button>
             </form>
 

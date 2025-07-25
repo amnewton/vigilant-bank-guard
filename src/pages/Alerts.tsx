@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,76 @@ import { Link } from "react-router-dom";
 
 const Alerts = () => {
   const [selectedAlert, setSelectedAlert] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({});
+  const { toast } = useToast();
+
+  // Add handler functions for all buttons
+  const handleViewDetails = (alertId: number) => {
+    setIsLoading({ [`details-${alertId}`]: true });
+    setTimeout(() => {
+      setIsLoading({});
+      toast({
+        title: "Alert Details",
+        description: `Viewing detailed information for alert #${alertId}`,
+      });
+    }, 1000);
+  };
+
+  const handleMarkResolved = (alertId: number) => {
+    setIsLoading({ [`resolve-${alertId}`]: true });
+    setTimeout(() => {
+      setIsLoading({});
+      toast({
+        title: "Alert Resolved",
+        description: `Alert #${alertId} has been marked as resolved`,
+      });
+    }, 1000);
+  };
+
+  const handleTerminateSession = (sessionId: number) => {
+    setIsLoading({ [`terminate-${sessionId}`]: true });
+    setTimeout(() => {
+      setIsLoading({});
+      toast({
+        title: "Session Terminated",
+        description: `Suspicious session has been terminated successfully`,
+        variant: "destructive",
+      });
+    }, 1000);
+  };
+
+  const handleTerminateAllSessions = () => {
+    setIsLoading({ 'terminate-all': true });
+    setTimeout(() => {
+      setIsLoading({});
+      toast({
+        title: "All Sessions Terminated",
+        description: "All other sessions have been terminated for security",
+      });
+    }, 1500);
+  };
+
+  const handleEnableSessionAlerts = () => {
+    setIsLoading({ 'session-alerts': true });
+    setTimeout(() => {
+      setIsLoading({});
+      toast({
+        title: "Session Alerts Enabled",
+        description: "You will now receive notifications for new login sessions",
+      });
+    }, 1000);
+  };
+
+  const handleSecuritySetting = (setting: string) => {
+    setIsLoading({ [setting]: true });
+    setTimeout(() => {
+      setIsLoading({});
+      toast({
+        title: "Settings Updated",
+        description: `${setting.replace('-', ' ')} settings have been updated`,
+      });
+    }, 1000);
+  };
 
   const securityAlerts = [
     {
@@ -318,11 +389,27 @@ const Alerts = () => {
                               <h4 className="font-medium mb-2">Actions Taken:</h4>
                               <p className="text-sm">{alert.actions}</p>
                               <div className="flex gap-2 mt-3">
-                                <Button size="sm" variant="outline">
-                                  View Details
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewDetails(alert.id);
+                                  }}
+                                  disabled={isLoading[`details-${alert.id}`]}
+                                >
+                                  {isLoading[`details-${alert.id}`] ? "Loading..." : "View Details"}
                                 </Button>
-                                <Button size="sm" variant="outline">
-                                  Mark as Resolved
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleMarkResolved(alert.id);
+                                  }}
+                                  disabled={isLoading[`resolve-${alert.id}`]}
+                                >
+                                  {isLoading[`resolve-${alert.id}`] ? "Resolving..." : "Mark as Resolved"}
                                 </Button>
                               </div>
                             </div>
@@ -411,8 +498,14 @@ const Alerts = () => {
                             Last: {session.lastActivity}
                           </p>
                           {session.status === "suspicious" && (
-                            <Button size="sm" variant="alert" className="mt-2">
-                              Terminate Session
+                            <Button 
+                              size="sm" 
+                              variant="alert" 
+                              className="mt-2"
+                              onClick={() => handleTerminateSession(session.id)}
+                              disabled={isLoading[`terminate-${session.id}`]}
+                            >
+                              {isLoading[`terminate-${session.id}`] ? "Terminating..." : "Terminate Session"}
                             </Button>
                           )}
                         </div>
@@ -421,11 +514,21 @@ const Alerts = () => {
                   ))}
                 </div>
                 <div className="flex gap-3 mt-6">
-                  <Button variant="outline" className="flex-1">
-                    Terminate All Other Sessions
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={handleTerminateAllSessions}
+                    disabled={isLoading['terminate-all']}
+                  >
+                    {isLoading['terminate-all'] ? "Terminating..." : "Terminate All Other Sessions"}
                   </Button>
-                  <Button variant="banking" className="flex-1">
-                    Enable Session Alerts
+                  <Button 
+                    variant="banking" 
+                    className="flex-1"
+                    onClick={handleEnableSessionAlerts}
+                    disabled={isLoading['session-alerts']}
+                  >
+                    {isLoading['session-alerts'] ? "Enabling..." : "Enable Session Alerts"}
                   </Button>
                 </div>
               </CardContent>
@@ -440,21 +543,41 @@ const Alerts = () => {
                   <CardDescription>Customize your security settings</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => handleSecuritySetting('two-factor-auth')}
+                    disabled={isLoading['two-factor-auth']}
+                  >
                     <Shield className="w-4 h-4 mr-2" />
-                    Two-Factor Authentication
+                    {isLoading['two-factor-auth'] ? "Updating..." : "Two-Factor Authentication"}
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => handleSecuritySetting('login-notifications')}
+                    disabled={isLoading['login-notifications']}
+                  >
                     <Eye className="w-4 h-4 mr-2" />
-                    Login Notifications
+                    {isLoading['login-notifications'] ? "Updating..." : "Login Notifications"}
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => handleSecuritySetting('security-alerts')}
+                    disabled={isLoading['security-alerts']}
+                  >
                     <Bell className="w-4 h-4 mr-2" />
-                    Security Alerts
+                    {isLoading['security-alerts'] ? "Updating..." : "Security Alerts"}
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => handleSecuritySetting('trusted-devices')}
+                    disabled={isLoading['trusted-devices']}
+                  >
                     <Globe className="w-4 h-4 mr-2" />
-                    Trusted Devices
+                    {isLoading['trusted-devices'] ? "Updating..." : "Trusted Devices"}
                   </Button>
                 </CardContent>
               </Card>
@@ -481,8 +604,13 @@ const Alerts = () => {
                     <span className="text-sm">Threat Intelligence</span>
                     <CheckCircle className="w-5 h-5 text-success" />
                   </div>
-                  <Button variant="secure" className="w-full mt-4">
-                    View Detailed Report
+                  <Button 
+                    variant="secure" 
+                    className="w-full mt-4"
+                    onClick={() => handleSecuritySetting('detailed-report')}
+                    disabled={isLoading['detailed-report']}
+                  >
+                    {isLoading['detailed-report'] ? "Generating..." : "View Detailed Report"}
                   </Button>
                 </CardContent>
               </Card>

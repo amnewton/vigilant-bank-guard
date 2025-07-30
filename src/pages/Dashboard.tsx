@@ -16,10 +16,28 @@ import {
   Settings,
   LogOut
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const [showBalance, setShowBalance] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    navigate("/login");
+  };
+
+  const handleQuickAction = (action: string) => {
+    toast({
+      title: action,
+      description: `${action} feature will be available soon.`,
+    });
+  };
 
   const accounts = [
     { id: 1, name: "Checking Account", type: "checking", balance: 12450.75, number: "****1234" },
@@ -54,16 +72,32 @@ const Dashboard = () => {
               <Link to="/alerts" className="text-muted-foreground hover:text-banking-blue">Security</Link>
             </nav>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigate("/alerts")}
+              >
                 <Bell className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => toast({ title: "Profile", description: "Profile page coming soon." })}
+              >
                 <User className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => toast({ title: "Settings", description: "Settings page coming soon." })}
+              >
                 <Settings className="w-5 h-5" />
               </Button>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleLogout}
+              >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </Button>
@@ -81,19 +115,35 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Button variant="banking" className="h-auto py-4 flex-col gap-2">
+          <Button 
+            variant="banking" 
+            className="h-auto py-4 flex-col gap-2"
+            onClick={() => navigate("/transfers")}
+          >
             <ArrowUpRight className="w-5 h-5" />
             Send Money
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+          <Button 
+            variant="outline" 
+            className="h-auto py-4 flex-col gap-2"
+            onClick={() => handleQuickAction("Request Money")}
+          >
             <ArrowDownLeft className="w-5 h-5" />
             Request Money
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+          <Button 
+            variant="outline" 
+            className="h-auto py-4 flex-col gap-2"
+            onClick={() => handleQuickAction("Pay Bills")}
+          >
             <CreditCard className="w-5 h-5" />
             Pay Bills
           </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+          <Button 
+            variant="outline" 
+            className="h-auto py-4 flex-col gap-2"
+            onClick={() => handleQuickAction("Investments")}
+          >
             <TrendingUp className="w-5 h-5" />
             Investments
           </Button>
@@ -188,7 +238,11 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" className="w-full mt-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => handleQuickAction("View All Transactions")}
+                >
                   View All Transactions
                 </Button>
               </CardContent>
@@ -218,8 +272,13 @@ const Dashboard = () => {
                   <span className="text-sm">Last Login</span>
                   <span className="text-sm text-muted-foreground">Today, 9:30 AM</span>
                 </div>
-                <Button variant="outline" size="sm" className="w-full mt-3">
-                  <Link to="/alerts">View Security Center</Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mt-3"
+                  onClick={() => navigate("/alerts")}
+                >
+                  View Security Center
                 </Button>
               </CardContent>
             </Card>

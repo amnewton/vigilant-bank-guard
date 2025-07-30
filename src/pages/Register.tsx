@@ -1,15 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 import { Shield, Eye, EyeOff, Lock, User, Mail, Phone } from "lucide-react";
+import { mockAuth } from "@/lib/supabase";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -20,14 +26,41 @@ const Register = () => {
     acceptTerms: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords don't match. Please try again.",
+        variant: "destructive",
+      });
       return;
     }
-    // Handle registration logic here
-    console.log("Registration attempt:", formData);
+    
+    setIsLoading(true);
+
+    try {
+      const result = await mockAuth.signUp(formData.email, formData.password);
+      
+      if (result.success) {
+        toast({
+          title: "Registration Successful",
+          description: "Your account has been created successfully",
+        });
+        
+        setTimeout(() => {
+          navigate('/login');
+        }, 1000);
+      }
+    } catch (error) {
+      toast({
+        title: "Registration Failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -188,9 +221,9 @@ const Register = () => {
                 variant="banking" 
                 size="lg" 
                 className="w-full mt-6"
-                disabled={!formData.acceptTerms}
+                disabled={!formData.acceptTerms || isLoading}
               >
-                Create Account
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 

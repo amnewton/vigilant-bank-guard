@@ -4,17 +4,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { Shield, Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { mockAuth } from "@/lib/supabase";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle password reset logic here
-    console.log("Password reset requested for:", email);
-    setIsSubmitted(true);
+    setIsLoading(true);
+
+    try {
+      const result = await mockAuth.resetPassword(email);
+      
+      if (result.success) {
+        toast({
+          title: "Reset Link Sent",
+          description: "Check your email for password reset instructions",
+        });
+        
+        setIsSubmitted(true);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send reset email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isSubmitted) {
@@ -89,8 +112,8 @@ const ForgotPassword = () => {
                 </div>
               </div>
 
-              <Button type="submit" variant="banking" size="lg" className="w-full">
-                Send Reset Instructions
+              <Button type="submit" variant="banking" size="lg" className="w-full" disabled={isLoading}>
+                {isLoading ? "Sending..." : "Send Reset Instructions"}
               </Button>
             </form>
 

@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Eye, EyeOff, Lock, User } from "lucide-react";
-import { mockAuth } from "@/lib/supabase";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,26 +22,34 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
+    console.log("Login attempt:", formData);
+    
     try {
-      const result = await mockAuth.signIn(formData.username, formData.password);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (result.success) {
+      // Demo credentials for testing
+      if (formData.username === "newton" && formData.password === "1234567") {
         toast({
           title: "Login Successful",
           description: "Welcome back! Redirecting to dashboard...",
         });
         
-        // Store user session
-        localStorage.setItem('user', JSON.stringify(result.user));
-        
+        // Redirect to dashboard after successful login
         setTimeout(() => {
           navigate("/dashboard");
         }, 1500);
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid username or password. Please try again.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       toast({
-        title: "Login Failed",
-        description: "Invalid username or password. Try: newton / 1234567",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {

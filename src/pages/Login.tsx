@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Eye, EyeOff, Lock, User } from "lucide-react";
+import { signIn } from "@/lib/supabase";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +15,7 @@ const Login = () => {
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -22,34 +23,24 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    console.log("Login attempt:", formData);
-    
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await signIn(formData.email, formData.password);
       
-      // Demo credentials for testing
-      if (formData.username === "newton" && formData.password === "1234567") {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back! Redirecting to dashboard...",
-        });
-        
-        // Redirect to dashboard after successful login
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1500);
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid username or password. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: "Login Successful",
+        description: "Welcome back! Redirecting to dashboard...",
+      });
+      
+      // Redirect to dashboard after successful login
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+      
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description: error instanceof Error ? error.message : "Invalid email or password. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -76,18 +67,18 @@ const Login = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-banking-dark font-medium">
-                  Username or Account Number
+                <Label htmlFor="email" className="text-banking-dark font-medium">
+                  Email Address
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <Input
-                    id="username"
-                    type="text"
-                    placeholder="Enter your username"
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
                     className="pl-10 h-12 border-2"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
                   />
                 </div>

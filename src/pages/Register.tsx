@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Shield, Eye, EyeOff, Lock, User, Mail, Phone } from "lucide-react";
+import { signUp } from "@/lib/supabase";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,21 +40,26 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await signUp(formData.email, formData.password, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+      });
       
       toast({
         title: "Account Created Successfully",
-        description: "Welcome to SecureBank! Redirecting to login...",
+        description: "Welcome to SecureBank! You can now sign in.",
       });
       
       setTimeout(() => {
         navigate("/login");
-      }, 1500);
+      }, 1000);
+      
     } catch (error) {
+      console.error("Registration error:", error);
       toast({
         title: "Registration Failed",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
